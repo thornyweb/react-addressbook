@@ -1,0 +1,26 @@
+{
+  "name": "react-addressbook",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "watchSass": "node-sass-chokidar --include-path ./node_modules src -o src --watch --recursive",
+    "start": "npm run watchSass && react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "dependencies": {
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-scripts-ts": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.3",
+    "@types/react": "^16.4.14",
+    "@types/react-dom": "^16.0.8",
+    "node-sass-chokidar": "^1.3.3",
+    "npm-run-all": "^4.1.3",
+    "typescript": "^3.1.1"
+  }
+}
