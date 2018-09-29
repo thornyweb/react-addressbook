@@ -6,5 +6,8 @@
       "node_modules/**/*.ts",
       "coverage/lcov-report/*.js"
     ]
+  },
+  "rules": {
+    "interface-name": false // Don't force interfaces to start with a capital I
   }
 }

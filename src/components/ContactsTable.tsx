@@ -6,7 +6,7 @@ import TableRow from '@material-ui/core/TableRow';
 // import * as fs from 'fs';
 import * as React from 'react';
 
-interface IContactAddress {
+interface ContactAddress {
   line1?: string,
   line2?: string,
   town?: string,
@@ -91,7 +91,7 @@ class ContactsTable extends React.Component {
   //   });
   // }
 
-  private sanitizeAddress(address: IContactAddress) {
+  private sanitizeAddress(address: ContactAddress) {
     let returnValue = '';
     Object.keys(address).forEach(field => {
       if (address[field]) {
