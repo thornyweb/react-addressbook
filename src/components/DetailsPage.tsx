@@ -11,6 +11,7 @@ class DetailsPage extends React.Component {
             variant="title"
             align="center"
             gutterBottom={true}
+            style={{paddingTop: '1em'}}
           >Contact Details</Typography>
           <ContactsTable />
         </Paper>
