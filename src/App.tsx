@@ -1,21 +1,22 @@
+import CssBaseline from '@material-ui/core/CssBaseline';
 import * as React from 'react';
-import './App.css';
-
-import logo from './logo.svg';
+import HeaderBar from './components/HeaderBar';
 
 class App extends React.Component {
   public render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
+      <React.Fragment>
+        { this.resetCSS() }
+        <div className="AppContainer">
+          <HeaderBar />
+        </div>
+      </React.Fragment>
     );
+  }
+
+  public resetCSS() {
+    // CssBaseline - Material UI equivalent of normalize.css
+    return <CssBaseline />;
   }
 }
 
