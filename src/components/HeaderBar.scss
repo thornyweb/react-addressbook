@@ -1,0 +1,12 @@
+.ApplicationHeaderBar {
+  .Title {
+    flex-grow: 1;
+    color: #FFF;
+  }
+  .Links {
+    a > button {
+      color: #FFF;
+    }
+  }
+}
+

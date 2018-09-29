@@ -1,9 +1,19 @@
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
+import ContactsTable from './ContactsTable';
 
 class DetailsPage extends React.Component {
   public render() {
     return (
-      <React.Fragment>Details</React.Fragment>
+        <Paper>
+          <Typography
+            variant="title"
+            align="center"
+            gutterBottom={true}
+          >Contact Details</Typography>
+          <ContactsTable />
+        </Paper>
     );
   }
 }
