@@ -1,6 +1,7 @@
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
 import * as React from 'react';
 
 class HeaderBar extends React.Component {
@@ -8,7 +9,9 @@ class HeaderBar extends React.Component {
     return (
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="title" color="inherit">Address Book</Typography>
+          <Typography variant="title" color="inherit">
+            <BookmarksIcon />&nbsp;Address Book
+          </Typography>
         </Toolbar>
       </AppBar>
     );
