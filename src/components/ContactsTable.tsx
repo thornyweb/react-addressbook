@@ -6,13 +6,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ErrorIcon from '@material-ui/icons/Error';
-import Axios from 'axios';
 import * as React from 'react';
-import { GetContacts } from '../api'
-import { Contacts } from '../common/types';
+import { GetContacts } from '../api';
+// import { Contacts } from '../common/types';
 
 interface ContactsTableState {
-  Contacts?: Contacts[],
+  Contacts?: any,
   FetchingAddresses: boolean
 }
 
@@ -30,7 +29,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
      * Update state boolean FetchingAddresses regardless of success of call, error is handled in component render
      * If successful, also update state with Contacts returned from the response.
      */
-    this.setState({ Contacts: GetContacts, FetchingAddresses: false });
+    this.setState({ Contacts: GetContacts(), FetchingAddresses: false });
   }
 
   public render() {
@@ -41,6 +40,8 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
     if (!this.state.Contacts) {
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><ErrorIcon /><Typography><br />Error loading data</Typography></div>;
     }
+
+    return null;
 
     return (
       <Table>
@@ -53,7 +54,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
           </TableRow>
         </TableHead>
         <TableBody>
-          {
+          {/* {
             this.state.Contacts.map(row => {
               return (
                 <TableRow key={row.id}>
@@ -66,21 +67,27 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
                 </TableRow>
               );
             })
-          }
+          } */}
+          <TableRow key="foo">
+            <TableCell component="th" scope="row">name</TableCell>
+            <TableCell><a href={`tel:TEL`}>TEL</a></TableCell>
+            <TableCell><a href={`mailto:EMAIL`}>EMAIL</a></TableCell>
+            <TableCell>ADDRESS</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     );
   }
 
-  private sanitizeAddress(address: ContactAddress) {
-    let returnValue = '';
-    Object.keys(address).forEach(field => {
-      if (address[field]) {
-        returnValue += `${returnValue !== '' ? ', ' : ''}${address[field]}`;
-      }
-    });
-    return returnValue;
-  }
+  // private sanitizeAddress(address: ContactAddress) {
+  //   let returnValue = '';
+  //   Object.keys(address).forEach(field => {
+  //     if (address[field]) {
+  //       returnValue += `${returnValue !== '' ? ', ' : ''}${address[field]}`;
+  //     }
+  //   });
+  //   return returnValue;
+  // }
 }
 
 export default ContactsTable;

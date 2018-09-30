@@ -3,7 +3,7 @@ export interface Contacts {
   name: string,
   email?: string,
   telephone?: string,
-  address: ContactAddress,
+  address: string,
 }
 
 export interface ContactAddress {
