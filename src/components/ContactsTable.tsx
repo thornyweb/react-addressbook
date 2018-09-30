@@ -8,26 +8,12 @@ import TableRow from '@material-ui/core/TableRow';
 import ErrorIcon from '@material-ui/icons/Error';
 import Axios from 'axios';
 import * as React from 'react';
+import { GetContacts } from '../api'
+import { Contacts } from '../common/types';
 
 interface ContactsTableState {
   Contacts?: Contacts[],
   FetchingAddresses: boolean
-}
-
-interface Contacts {
-  id: number,
-  name: string,
-  email?: string,
-  telephone?: string,
-  address: ContactAddress,
-}
-
-interface ContactAddress {
-  line1?: string,
-  line2?: string,
-  town?: string,
-  county?: string,
-  postcode?: string,
 }
 
 class ContactsTable extends React.Component<any, ContactsTableState> {
@@ -40,15 +26,11 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
 
   public componentDidMount() {
     /*
-     * Make axios call to local JSON server, - in production this would go to standard database / API endpoint. 
+     * Make axios call to restdb.io database of contacts,
      * Update state boolean FetchingAddresses regardless of success of call, error is handled in component render
      * If successful, also update state with Contacts returned from the response.
      */
-    Axios.get('http://localhost:8888/Addresses').then(
-      response => this.setState({ Contacts: response.data, FetchingAddresses: false })
-    ).catch(
-      err => this.setState({ FetchingAddresses: false })
-    );
+    this.setState({ Contacts: GetContacts, FetchingAddresses: false });
   }
 
   public render() {
@@ -72,7 +54,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
         </TableHead>
         <TableBody>
           {
-            this.state.Contacts.map( row => {
+            this.state.Contacts.map(row => {
               return (
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
