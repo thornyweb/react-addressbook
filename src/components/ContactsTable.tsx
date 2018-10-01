@@ -27,12 +27,12 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
   public componentDidMount() {
     /*
      * Make axios call to restdb.io database of contacts,
-     * Update state boolean FetchingAddresses regardless of success of call, error is handled in component render
+     * Update state boolean FetchingAddresses regardless of success of call, error is handled on component render
      * If successful, also update state with Contacts returned from the response.
      */
     GetContacts()
-    .then(response => this.setState({ Contacts: response, FetchingAddresses: false }))
-    .catch(err => this.setState({ FetchingAddresses: false }));
+      .then(response => this.setState({ Contacts: response, FetchingAddresses: false }))
+      .catch(err => this.setState({ FetchingAddresses: false }));
   }
 
   public render() {
@@ -43,8 +43,6 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
     if (!this.state.Contacts) {
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><ErrorIcon /><Typography><br />Error loading data</Typography></div>;
     }
-
-    // return <pre>{JSON.stringify(this.state.Contacts,null,4)}</pre>;
 
     return (
       <Table>
@@ -62,7 +60,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
             this.state.Contacts !== null &&
             this.state.Contacts.map(row => {
               return (
-                <TableRow key={row.id}>
+                <TableRow key={row.uid}>
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
@@ -83,7 +81,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
 
   private sanitizeAddress(contact: Contact) {
     let returnValue = '';
-    const addressFields = ['address_line1','address_line2','address_town','address_county','address_postcode'];
+    const addressFields = ['address_line1', 'address_line2', 'address_town', 'address_county', 'address_postcode'];
     addressFields.forEach(field => {
       if (contact[field]) {
         returnValue += `${returnValue !== '' ? ', ' : ''}${contact[field]}`;
