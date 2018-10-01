@@ -8,10 +8,10 @@ import TableRow from '@material-ui/core/TableRow';
 import ErrorIcon from '@material-ui/icons/Error';
 import * as React from 'react';
 import { GetContacts } from '../api';
-// import { Contacts } from '../common/types';
+import { Contact } from '../types/contacts';
 
 interface ContactsTableState {
-  Contacts?: any,
+  Contacts: Contact[] | null,
   FetchingAddresses: boolean
 }
 
@@ -19,6 +19,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      Contacts: null,
       FetchingAddresses: true
     };
   }
@@ -29,7 +30,9 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
      * Update state boolean FetchingAddresses regardless of success of call, error is handled in component render
      * If successful, also update state with Contacts returned from the response.
      */
-    this.setState({ Contacts: GetContacts(), FetchingAddresses: false });
+    GetContacts()
+    .then(response => this.setState({ Contacts: response, FetchingAddresses: false }))
+    .catch(err => this.setState({ FetchingAddresses: false }));
   }
 
   public render() {
@@ -41,7 +44,7 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><ErrorIcon /><Typography><br />Error loading data</Typography></div>;
     }
 
-    return null;
+    // return <pre>{JSON.stringify(this.state.Contacts,null,4)}</pre>;
 
     return (
       <Table>
@@ -51,10 +54,12 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
             <TableCell>Telephone</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Address</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* {
+          {
+            this.state.Contacts !== null &&
             this.state.Contacts.map(row => {
               return (
                 <TableRow key={row.id}>
@@ -63,31 +68,29 @@ class ContactsTable extends React.Component<any, ContactsTableState> {
                   </TableCell>
                   <TableCell><a href={`tel:${row.telephone}`}>{row.telephone}</a></TableCell>
                   <TableCell><a href={`mailto:${row.email}`}>{row.email}</a></TableCell>
-                  <TableCell>{this.sanitizeAddress(row.address)}</TableCell>
+                  <TableCell>{this.sanitizeAddress(row)}</TableCell>
+                  <TableCell>
+                    Edit | Delete
+                  </TableCell>
                 </TableRow>
               );
             })
-          } */}
-          <TableRow key="foo">
-            <TableCell component="th" scope="row">name</TableCell>
-            <TableCell><a href={`tel:TEL`}>TEL</a></TableCell>
-            <TableCell><a href={`mailto:EMAIL`}>EMAIL</a></TableCell>
-            <TableCell>ADDRESS</TableCell>
-          </TableRow>
+          }
         </TableBody>
       </Table>
     );
   }
 
-  // private sanitizeAddress(address: ContactAddress) {
-  //   let returnValue = '';
-  //   Object.keys(address).forEach(field => {
-  //     if (address[field]) {
-  //       returnValue += `${returnValue !== '' ? ', ' : ''}${address[field]}`;
-  //     }
-  //   });
-  //   return returnValue;
-  // }
+  private sanitizeAddress(contact: Contact) {
+    let returnValue = '';
+    const addressFields = ['address_line1','address_line2','address_town','address_county','address_postcode'];
+    addressFields.forEach(field => {
+      if (contact[field]) {
+        returnValue += `${returnValue !== '' ? ', ' : ''}${contact[field]}`;
+      }
+    });
+    return returnValue;
+  }
 }
 
 export default ContactsTable;

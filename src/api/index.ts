@@ -1,20 +1,14 @@
-import Axios, { AxiosPromise } from "axios";
-import { Contacts } from '../common/types';
+import { Contact } from '../types/contacts';
+import { api, axiosPromise } from "./endpoints";
 
-export const GetContacts = (): AxiosPromise<Contacts[]> => {
-  return new Promise((resolve, reject) => {
-    Axios.get(
-      'https://addressbook-1c4b.restdb.io/rest/contacts',
-      {
-        headers: {
-          'cache-control': 'no-cache',
-          'x-apikey': 'a8455aaa000cbb87de9aa0324a4a54cf7583d'
-        }
+export function GetContacts(): Promise<Contact[]> {
+  return axiosPromise(() => api.get(
+    '/contacts',
+    {
+      headers: {
+        'cache-control': 'no-cache',
+        'x-apikey': '5bb25b0abd79880aab0a78a1'
       }
-    ).then(response => {
-      resolve(response.data);
-    }, err => {
-      reject(err);
-    });
-  });
-};
+    }
+  ));
+}
