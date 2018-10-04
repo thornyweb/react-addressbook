@@ -1,4 +1,4 @@
-import { Contact, ValidatePostcodeResponse } from '../types';
+import { Contact, LookupPostcodeResponse, ValidatePostcodeResponse } from '../types';
 import { axiosPromise, postcodesIORequest, restDBRequest } from "./apis";
 
 export function GetContacts(): Promise<Contact[]> {
@@ -15,4 +15,8 @@ export function GetContacts(): Promise<Contact[]> {
 
 export function ValidatePostcode(postcode: string): Promise<ValidatePostcodeResponse> {
   return axiosPromise(() => postcodesIORequest.get(`/${postcode}/validate`));
+}
+
+export function LookupPostcode(postcode: string): Promise<LookupPostcodeResponse> {
+  return axiosPromise(() => postcodesIORequest.get(`/${postcode}`));
 }
