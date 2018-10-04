@@ -1,8 +1,8 @@
-import { Contact } from '../types/contacts';
-import { api, axiosPromise } from "./endpoints";
+import { Contact, ValidatePostcodeResponse } from '../types';
+import { axiosPromise, postcodesIORequest, restDBRequest } from "./apis";
 
 export function GetContacts(): Promise<Contact[]> {
-  return axiosPromise(() => api.get(
+  return axiosPromise(() => restDBRequest.get(
     '/contacts',
     {
       headers: {
@@ -11,4 +11,8 @@ export function GetContacts(): Promise<Contact[]> {
       }
     }
   ));
+}
+
+export function ValidatePostcode(postcode: string): Promise<ValidatePostcodeResponse> {
+  return axiosPromise(() => postcodesIORequest.get(`/${postcode}/validate`));
 }

@@ -1,7 +1,12 @@
 import axios, { AxiosPromise } from 'axios';
+import { POSTCODES_IO_BASE_URL, REST_DB_BASE_URL } from '../constants';
 
-export const api = axios.create({
-  baseURL: 'https://addressbook-1c4b.restdb.io/rest'
+export const restDBRequest = axios.create({
+  baseURL: REST_DB_BASE_URL
+});
+
+export const postcodesIORequest = axios.create({
+  baseURL: POSTCODES_IO_BASE_URL
 });
 
 export function axiosPromise<T>(callAxios: () => AxiosPromise<T>) {

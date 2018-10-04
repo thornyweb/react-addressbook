@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import ErrorIcon from '@material-ui/icons/Error';
 import * as React from 'react';
 import { GetContacts } from '../api';
-import { Contact } from '../types/contacts';
+import { Contact } from '../types';
 
 interface ContactsTableState {
   Contacts: Contact[] | null,
