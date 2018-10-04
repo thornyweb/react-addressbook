@@ -1,6 +1,7 @@
 import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import autobind from 'autobind-decorator';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -53,7 +54,7 @@ class ContactForm extends React.Component<any, ContactFormState> {
                 variant="contained"
                 color="primary"
                 style={{ verticalAlign: 'bottom', marginLeft: '1em' }}
-                onClick={this.addressLookup()}
+                onClick={this.addressLookup}
               >Lookup address</Button>
             </Grid>
           </Grid>
@@ -62,13 +63,16 @@ class ContactForm extends React.Component<any, ContactFormState> {
     );
   }
 
-  private setPostcodeState(event: any): any {
+  @autobind
+  private setPostcodeState(event: any) {
     this.setState({ postcodeValue: event.target.value })
   }
 
-  private addressLookup(): any {
+  @autobind
+  private addressLookup() {
     alert(this.state.postcodeValue);
   }
+  
 }
 
 export default ContactForm;
