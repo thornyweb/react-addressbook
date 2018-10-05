@@ -8,27 +8,44 @@ import autobind from 'autobind-decorator';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { LookupPostcode, ValidatePostcode } from '../api';
+import { AddContactRequest } from '../types';
+
+interface ContactFormProps {
+  submitCallback: (formData: AddContactRequest) => void
+}
 
 interface ContactFormState {
-  lookedupAddress1?: string;
-  lookedupAddress2?: string;
-  lookedupAddressTown?: string;
-  lookedupAddressCounty?: string;
-  lookedupAddressPostcode?: string;
-  postcodeValue?: string;
+  address1Value: string;
+  address2Value: string;
+  addressTownValue: string;
+  addressCountyValue: string;
+  emailValue: string;
+  nameFieldError: boolean;
+  nameValue: string;
+  postcodeValue: string;
   postcodeValid?: boolean;
   postcodeProcessing: boolean;
   displaySnackBar: boolean;
   snackBarMessage?: string;
+  telephoneValue: string;
 }
 
-class ContactForm extends React.Component<any, ContactFormState> {
+class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
 
-  constructor(props: any) {
+  constructor(props: ContactFormProps) {
     super(props);
     this.state = {
+      address1Value: '',
+      address2Value: '',
+      addressCountyValue: '',
+      addressTownValue: '',
       displaySnackBar: false,
-      postcodeProcessing: false
+      emailValue: '',
+      nameFieldError: false,
+      nameValue: '',
+      postcodeProcessing: false,
+      postcodeValue: '',
+      telephoneValue: ''
     };
   }
 
@@ -41,7 +58,8 @@ class ContactForm extends React.Component<any, ContactFormState> {
             placeholder="1 London Road"
             fullWidth={true}
             name="address_line_1"
-            value={this.state.lookedupAddress1}
+            value={this.state.address1Value}
+            onChange={this.changeAddress1}
           />
         </Grid>
         <Grid item={true}>
@@ -50,7 +68,9 @@ class ContactForm extends React.Component<any, ContactFormState> {
             placeholder="Woodston"
             fullWidth={true}
             name="address_line_2"
-            value={this.state.lookedupAddress2}
+            InputLabelProps={{ shrink: true }}
+            value={this.state.address2Value}
+            onChange={this.changeAddress2}
           />
         </Grid>
         <Grid item={true}>
@@ -59,7 +79,9 @@ class ContactForm extends React.Component<any, ContactFormState> {
             placeholder="Peterborough"
             fullWidth={true}
             name="address_town"
-            value={this.state.lookedupAddressTown}
+            InputLabelProps={{ shrink: true }}
+            value={this.state.addressTownValue}
+            onChange={this.changeAddressTown}
           />
         </Grid>
         <Grid item={true}>
@@ -67,7 +89,9 @@ class ContactForm extends React.Component<any, ContactFormState> {
             label="County"
             fullWidth={true}
             name="address_county"
-            value={this.state.lookedupAddressCounty}
+            InputLabelProps={{ shrink: true }}
+            value={this.state.addressCountyValue}
+            onChange={this.changeAddressCounty}
           />
         </Grid>
       </React.Fragment>
@@ -87,7 +111,10 @@ class ContactForm extends React.Component<any, ContactFormState> {
                   required={true}
                   autoFocus={true}
                   fullWidth={true}
+                  onChange={this.changeName}
                   name="name"
+                  value={this.state.nameValue}
+                  error={this.state.nameFieldError}
                 />
               </Grid>
               <Grid item={true}>
@@ -97,6 +124,8 @@ class ContactForm extends React.Component<any, ContactFormState> {
                   type="email"
                   fullWidth={true}
                   name="email"
+                  onChange={this.changeEmail}
+                  value={this.state.emailValue}
                 />
               </Grid>
               <Grid item={true}>
@@ -106,20 +135,24 @@ class ContactForm extends React.Component<any, ContactFormState> {
                   type="tel"
                   fullWidth={true}
                   name="telephone"
+                  onChange={this.changeTel}
+                  value={this.state.telephoneValue}
                 />
               </Grid>
               <Grid item={true}>
                 <TextField
+                  id="address_postcode"
                   label="Postcode"
                   placeholder="PE1 1AA"
-                  onChange={this.setPostcodeState}
+                  value={this.state.postcodeValue}
+                  onChange={this.changePostcode}
                   error={this.state.postcodeValid === false}
                   name="address_postcode"
-                  value={this.state.lookedupAddressPostcode}
+                  required={true}
                 />
                 <Button
                   variant="contained"
-                  color="primary"
+                  color="secondary"
                   style={{ verticalAlign: 'bottom', marginLeft: '1em' }}
                   onClick={this.checkPostcodeValid}
                   disabled={this.state.postcodeProcessing}
@@ -129,6 +162,14 @@ class ContactForm extends React.Component<any, ContactFormState> {
                 this.state.postcodeValid === true &&
                 this.renderAddressFields()
               }
+              <Grid item={true}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.validateFormData}
+                  disabled={false}
+                >Save Contact</Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -155,8 +196,43 @@ class ContactForm extends React.Component<any, ContactFormState> {
   }
 
   @autobind
-  private setPostcodeState(event: any) {
+  private changeName(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ nameValue: event.target.value, 'nameFieldError': event.target.value.length === 0 })
+  }
+
+  @autobind
+  private changeTel(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ telephoneValue: event.target.value })
+  }
+
+  @autobind
+  private changeEmail(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ emailValue: event.target.value })
+  }
+
+  @autobind
+  private changePostcode(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ postcodeValue: event.target.value, postcodeValid: undefined })
+  }
+
+  @autobind
+  private changeAddress1(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ address1Value: event.target.value })
+  }
+
+  @autobind
+  private changeAddress2(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ address2Value: event.target.value })
+  }
+
+  @autobind
+  private changeAddressTown(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ addressTownValue: event.target.value })
+  }
+
+  @autobind
+  private changeAddressCounty(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ addressCountyValue: event.target.value })
   }
 
   @autobind
@@ -199,14 +275,12 @@ class ContactForm extends React.Component<any, ContactFormState> {
       LookupPostcode(postcode)
         .then(response => {
           const postcodeResult = response.result;
-          // tslint:disable-next-line:no-console
-          console.log(postcodeResult);
           this.setState({
-            lookedupAddress2: postcodeResult.admin_ward,
-            lookedupAddressCounty: postcodeResult.admin_county,
-            lookedupAddressPostcode: postcodeResult.postcode,          
-            lookedupAddressTown: postcodeResult.admin_district,          
-            postcodeProcessing: false            
+            address2Value: postcodeResult.admin_ward ? postcodeResult.admin_ward : '',
+            addressCountyValue: postcodeResult.admin_county ? postcodeResult.admin_county : '',
+            addressTownValue: postcodeResult.admin_district ? postcodeResult.admin_district : '',
+            postcodeProcessing: false,
+            postcodeValue: postcodeResult.postcode
           });
         })
     }
@@ -215,6 +289,26 @@ class ContactForm extends React.Component<any, ContactFormState> {
   @autobind
   private closeSnackBar() {
     this.setState({ displaySnackBar: false });
+  }
+
+  @autobind
+  private validateFormData() {
+    const invalidName = !this.state.nameValue;
+    const invalidPostcode = this.state.postcodeValid !== true;
+    if (invalidName || invalidPostcode) {
+      this.setState({ nameFieldError: invalidName, postcodeValid: !invalidPostcode  });
+    } else {
+      this.props.submitCallback({
+        address_county: this.state.addressCountyValue,
+        address_line1: this.state.address1Value,
+        address_line2: this.state.address2Value,
+        address_postcode: this.state.postcodeValue,
+        address_town: this.state.addressTownValue,
+        email: this.state.emailValue,
+        name: this.state.nameValue,
+        telephone: this.state.telephoneValue
+      });
+    }
   }
 
 }
