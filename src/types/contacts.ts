@@ -1,5 +1,6 @@
 export interface Contact {
-  uid: number,
+  _id: string,
+  uid: string,
   name: string,
   email?: string,
   telephone?: string,
@@ -19,4 +20,9 @@ export interface AddContactRequest {
   address_town?: string,
   address_county?: string,
   address_postcode?: string,
+}
+
+export interface EditContactRequest extends AddContactRequest {
+  _id: string;
+  uid: number;
 }

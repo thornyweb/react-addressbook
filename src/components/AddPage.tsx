@@ -7,30 +7,56 @@ import { AddContact } from '../api';
 import { AddContactRequest } from '../types';
 import ContactForm from './ContactForm';
 
-class AddPage extends React.Component<RouteComponentProps<void>> {
+interface AddPageState {
+  processing: boolean;
+  showSnackbar: boolean;
+  snackbarContent: string;
+}
+
+class AddPage extends React.Component<RouteComponentProps<void>, AddPageState> {
+  constructor(props: RouteComponentProps<void>) {
+    super(props);
+    this.state = {
+      processing: false,
+      showSnackbar: false,
+      snackbarContent: ''
+    }
+  }
+
   public render() {
     return (
-        <Paper>
-          <Typography
-            variant="title"
-            align="center"
-            gutterBottom={true}
-            style={{paddingTop: '1em'}}
-          >Add Contact</Typography>
-          <ContactForm submitCallback={this.addContact} />
-        </Paper>
+      <Paper>
+        <Typography
+          variant="title"
+          align="center"
+          gutterBottom={true}
+          style={{ paddingTop: '1em' }}
+        >Add Contact</Typography>
+        <ContactForm
+          submitCallback={this.addContact}
+          processing={this.state.processing}
+          processingCallback={this.toggleProcessing}
+        />
+      </Paper>
     );
   }
 
   @autobind
   private addContact(formData: AddContactRequest) {
-    // tslint:disable-next-line:no-console
+    this.setState({ processing: true });
     AddContact(formData)
-    .then(response => {
-      this.props.history.push(`/`);
-    })
-    // tslint:disable-next-line:no-console
-    .catch(err => console.error(`Error adding contact: ${err.message}`));
+      .then(response => {
+        this.setState({ processing: false });
+        this.props.history.push(`/`);
+      })
+      .catch(err => {
+        this.setState({ processing: false });
+      });
+  }
+
+  @autobind
+  private toggleProcessing() {
+    this.setState(prevState => ({ processing: !prevState.processing }));
   }
 }
 

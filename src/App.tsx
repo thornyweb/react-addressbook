@@ -1,20 +1,23 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import AddPage from './components/AddPage';
 import DetailsPage from './components/DetailsPage';
+import EditPage from './components/EditPage';
 import HeaderBar from './components/HeaderBar';
 
 class App extends React.Component {
   public render() {
     return (
       <React.Fragment>
-        { this.resetCSS() }
+        {this.resetCSS()}
         <div className="AppContainer">
           <HeaderBar />
           <Switch>
+            <Route exact={true} path="/" component={DetailsPage} />
             <Route exact={true} path="/add" component={AddPage} />
-            <Route path="/" component={DetailsPage} />
+            <Route exact={true} path="/edit/:id" component={EditPage} />
+            <Redirect from="*" to="/" />
           </Switch>
         </div>
       </React.Fragment>

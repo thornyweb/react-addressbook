@@ -1,17 +1,18 @@
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
-import CloseIcon from '@material-ui/icons/Close';
 import autobind from 'autobind-decorator';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { LookupPostcode, ValidatePostcode } from '../api';
-import { AddContactRequest } from '../types';
+import { AddContactRequest, Contact } from '../types';
+import SharedSnackbar from './SharedSnackbar';
 
 interface ContactFormProps {
-  submitCallback: (formData: AddContactRequest) => void
+  contactDetails?: Contact;
+  processing: boolean;
+  processingCallback: () => void;
+  submitCallback: (formData: AddContactRequest) => void;
 }
 
 interface ContactFormState {
@@ -19,14 +20,14 @@ interface ContactFormState {
   address2Value: string;
   addressTownValue: string;
   addressCountyValue: string;
+  emailFieldError: boolean;
   emailValue: string;
   nameFieldError: boolean;
   nameValue: string;
   postcodeValue: string;
   postcodeValid?: boolean;
-  postcodeProcessing: boolean;
   displaySnackBar: boolean;
-  snackBarMessage?: string;
+  snackBarMessage: string;
   telephoneValue: string;
 }
 
@@ -40,13 +41,30 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
       addressCountyValue: '',
       addressTownValue: '',
       displaySnackBar: false,
+      emailFieldError: false,
       emailValue: '',
       nameFieldError: false,
       nameValue: '',
-      postcodeProcessing: false,
       postcodeValue: '',
+      snackBarMessage: '',
       telephoneValue: ''
     };
+  }
+
+  public componentDidMount() {
+    if (this.props.contactDetails) {
+      this.setState({
+        address1Value: this.props.contactDetails.address_line1 ? this.props.contactDetails.address_line1 : '',
+        address2Value: this.props.contactDetails.address_line2 ? this.props.contactDetails.address_line2 : '',
+        addressCountyValue: this.props.contactDetails.address_county ? this.props.contactDetails.address_county : '',
+        addressTownValue: this.props.contactDetails.address_town ? this.props.contactDetails.address_town : '',
+        emailValue: this.props.contactDetails.email ? this.props.contactDetails.email : '',
+        nameValue: this.props.contactDetails.name ? this.props.contactDetails.name : '',
+        postcodeValid: true,
+        postcodeValue: this.props.contactDetails.address_postcode ? this.props.contactDetails.address_postcode : '',
+        telephoneValue: this.props.contactDetails.telephone ? this.props.contactDetails.telephone : ''
+      });
+    }
   }
 
   public renderAddressFields() {
@@ -115,6 +133,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
                   name="name"
                   value={this.state.nameValue}
                   error={this.state.nameFieldError}
+                  helperText={this.state.nameFieldError ? 'Please enter your name' : ''}
                 />
               </Grid>
               <Grid item={true}>
@@ -126,6 +145,8 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
                   name="email"
                   onChange={this.changeEmail}
                   value={this.state.emailValue}
+                  error={this.state.emailFieldError}
+                  helperText={this.state.emailFieldError ? 'Please enter a valid email address' : ''}
                 />
               </Grid>
               <Grid item={true}>
@@ -149,13 +170,14 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
                   error={this.state.postcodeValid === false}
                   name="address_postcode"
                   required={true}
+                  helperText={this.state.postcodeValid === false ? 'You must enter a valid postcode' : ''}
                 />
                 <Button
                   variant="contained"
                   color="secondary"
                   style={{ verticalAlign: 'bottom', marginLeft: '1em' }}
                   onClick={this.checkPostcodeValid}
-                  disabled={this.state.postcodeProcessing}
+                  disabled={this.props.processing}
                 >Lookup address</Button>
               </Grid>
               {
@@ -166,31 +188,14 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
                 <Button
                   variant="contained"
                   color="primary"
+                  disabled={this.props.processing}
                   onClick={this.validateFormData}
-                  disabled={false}
                 >Save Contact</Button>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{
-            horizontal: 'right',
-            vertical: 'top'
-          }}
-          open={this.state.displaySnackBar}
-          onClose={this.closeSnackBar}
-          autoHideDuration={6000}
-          ContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.snackBarMessage}</span>}
-          action={
-            <IconButton key="close" aria-label="Close" color="inherit" onClick={this.closeSnackBar}>
-              <CloseIcon />
-            </IconButton>
-          }
-        />
+        <SharedSnackbar open={this.state.displaySnackBar} message={this.state.snackBarMessage} closeCallback={this.closeSnackBar} />
       </React.Fragment>
     );
   }
@@ -207,7 +212,13 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
 
   @autobind
   private changeEmail(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ emailValue: event.target.value })
+    // Email Regex taken from input type="email" from W3C
+    const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    let emailFieldInvalid = false;
+    if (!emailRegex.test(event.target.value)) {
+      emailFieldInvalid = true;
+    }
+    this.setState({ emailFieldError: emailFieldInvalid, emailValue: event.target.value })
   }
 
   @autobind
@@ -238,13 +249,12 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
   @autobind
   private checkPostcodeValid() {
     const postcode = this.state.postcodeValue;
+    this.props.processingCallback();
     if (postcode) {
-      this.setState({ postcodeProcessing: true });
       ValidatePostcode(postcode)
         .then(response => {
           this.setState({
             displaySnackBar: response.result === false,
-            postcodeProcessing: false,
             postcodeValid: response.result === true,
             snackBarMessage: `${response.result === true ? undefined : 'Invalid postcode'}`
           });
@@ -252,18 +262,21 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             this.fetchPostcodeData();
           }
         })
-        .catch(err => this.setState({
-          displaySnackBar: true,
-          postcodeProcessing: false,
-          postcodeValid: undefined,
-          snackBarMessage: 'Error validating postcode'
-        }));
+        .catch(err => {
+          this.setState({
+            displaySnackBar: true,
+            postcodeValid: undefined,
+            snackBarMessage: 'Error validating postcode'
+          });
+          this.props.processingCallback();
+        });
     } else {
       this.setState({
         displaySnackBar: true,
         postcodeValid: false,
         snackBarMessage: 'Please enter a postcode'
       });
+      this.props.processingCallback();
     }
   }
 
@@ -271,7 +284,6 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
   private fetchPostcodeData() {
     const postcode = this.state.postcodeValue;
     if (postcode) {
-      this.setState({ postcodeProcessing: true });
       LookupPostcode(postcode)
         .then(response => {
           const postcodeResult = response.result;
@@ -279,10 +291,11 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             address2Value: postcodeResult.admin_ward ? postcodeResult.admin_ward : '',
             addressCountyValue: postcodeResult.admin_county ? postcodeResult.admin_county : '',
             addressTownValue: postcodeResult.admin_district ? postcodeResult.admin_district : '',
-            postcodeProcessing: false,
             postcodeValue: postcodeResult.postcode
           });
+          this.props.processingCallback();
         })
+        .catch(err => this.props.processingCallback());
     }
   }
 
@@ -296,7 +309,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     const invalidName = !this.state.nameValue;
     const invalidPostcode = this.state.postcodeValid !== true;
     if (invalidName || invalidPostcode) {
-      this.setState({ nameFieldError: invalidName, postcodeValid: !invalidPostcode  });
+      this.setState({ nameFieldError: invalidName, postcodeValid: !invalidPostcode });
     } else {
       this.props.submitCallback({
         address_county: this.state.addressCountyValue,

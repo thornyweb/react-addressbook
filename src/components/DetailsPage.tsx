@@ -1,9 +1,10 @@
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import ContactsTable from './ContactsTable';
 
-class DetailsPage extends React.Component {
+class DetailsPage extends React.Component<RouteComponentProps<void>> {
   public render() {
     return (
       <Paper style={{width: '100%', overflowX: 'auto'}}>
@@ -13,7 +14,7 @@ class DetailsPage extends React.Component {
           gutterBottom={true}
           style={{ paddingTop: '1em' }}
         >Contact Details</Typography>
-        <ContactsTable />
+        <ContactsTable {...this.props} />
       </Paper>
     );
   }
