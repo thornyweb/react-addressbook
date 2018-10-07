@@ -5,10 +5,7 @@
   "scripts": {
     "watchSASS": "node-sass-chokidar --include-path ./node_modules src -o src --watch --recursive",
     "watchJS": "react-scripts-ts start",
-    "start": "npm-run-all -p watchSASS watchJS",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "npm-run-all -p watchSASS watchJS"
   },
   "dependencies": {
     "@material-ui/core": "^3.1.1",
