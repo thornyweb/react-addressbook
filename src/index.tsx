@@ -4,6 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
+/**
+ * Main page
+ * Wraps App component with BrowserRouter HOC to make all routes and history elements from react router available throughout the app. 
+ */
+
 ReactDOM.render(
   <BrowserRouter>
     <App />

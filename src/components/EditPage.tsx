@@ -8,6 +8,11 @@ import { EditContact, GetContact } from '../api';
 import { Contact } from '../types';
 import ContactForm from './ContactForm';
 
+/**
+ * Model props and state
+ * Edit page must have an id parameter
+ */
+
 interface EditPageParams {
   id: string
 }
@@ -29,11 +34,12 @@ class EditPage extends React.Component<RouteComponentProps<EditPageParams>, Edit
     }
   }
 
+  /**
+   * Load contact from given id on initial mount
+   */
   public componentDidMount() {
     GetContact(this.props.match.params.id)
       .then(response => {
-        // tslint:disable-next-line:no-console
-        console.log(response);
         this.setState({ currentContact: response, processing: false });
       })
       .catch(err => {
@@ -42,6 +48,9 @@ class EditPage extends React.Component<RouteComponentProps<EditPageParams>, Edit
   }
 
   public render() {
+    /**
+     * Default render if contact is loading, or failed to load.
+     */
     if (!this.state.currentContact || this.state.processing) {
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><CircularProgress size={100} /><Typography><br />Loading...</Typography></div>;
     }
@@ -64,6 +73,10 @@ class EditPage extends React.Component<RouteComponentProps<EditPageParams>, Edit
     );
   }
 
+  /**
+   * Callback passed to ContactForm which validates the type of data being passed back
+   * Call to database API to edit the existing contact with the updated values.
+   */
   @autobind
   private editContact(formData: Contact) {
     this.setState({ processing: true });
@@ -73,8 +86,6 @@ class EditPage extends React.Component<RouteComponentProps<EditPageParams>, Edit
     if (this.state.currentContact && this.state.currentContact.uid) {
       userData.uid = this.state.currentContact.uid;
     }
-    // tslint:disable-next-line:no-console
-    console.log(userData);
     EditContact(userId, userData)
       .then(response => {
         this.setState({ processing: false });

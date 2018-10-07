@@ -7,6 +7,9 @@ import { AddContact } from '../api';
 import { AddContactRequest } from '../types';
 import ContactForm from './ContactForm';
 
+/**
+ * Page state definition
+ */
 interface AddPageState {
   processing: boolean;
   showSnackbar: boolean;
@@ -41,6 +44,10 @@ class AddPage extends React.Component<RouteComponentProps<void>, AddPageState> {
     );
   }
 
+  /**
+   * Add contact request once form is validated, passed to ContactForm as callback.
+   * Redirects to main contacts list on success.
+   */
   @autobind
   private addContact(formData: AddContactRequest) {
     this.setState({ processing: true });

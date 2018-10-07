@@ -10,6 +10,11 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import './HeaderBar.css';
 
+/**
+ * HeaderBar component using Material UI to give familar
+ * 'Google-esque' appearance to app.
+ */
+
 class HeaderBar extends React.Component {
   public render() {
     return (
@@ -30,7 +35,6 @@ class HeaderBar extends React.Component {
             </Link>
             </Tooltip>
           </div>
-
         </Toolbar>
       </AppBar>
     );

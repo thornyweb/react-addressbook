@@ -3,12 +3,20 @@ import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import * as React from 'react';
 
+/**
+ * Component props map
+ * Model which props to take, their type and if they are optional
+ */
 interface SharedSnackbarProps {
   open: boolean;
   message: string;
   closeCallback?: () => void;
 }
 
+/**
+ * Return a Material UI Snackbar component with a standard configuration
+ * Extracted to it's own component to avoid large code repitition.
+ */
 class SharedSnackbar extends React.Component<SharedSnackbarProps> {
 
   public render() {

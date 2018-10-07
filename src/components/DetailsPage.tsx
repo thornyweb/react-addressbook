@@ -4,6 +4,11 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import ContactsTable from './ContactsTable';
 
+/**
+ * High level page component for the main browse page,
+ * wraps <ContactsTable> component which is the actual table view
+ */
+
 class DetailsPage extends React.Component<RouteComponentProps<void>> {
   public render() {
     return (

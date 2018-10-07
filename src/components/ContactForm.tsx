@@ -8,6 +8,9 @@ import { LookupPostcode, ValidatePostcode } from '../api';
 import { AddContactRequest, Contact } from '../types';
 import SharedSnackbar from './SharedSnackbar';
 
+/**
+ * Props model for ContactForm component
+ */
 interface ContactFormProps {
   contactDetails?: Contact;
   processing: boolean;
@@ -15,6 +18,11 @@ interface ContactFormProps {
   submitCallback: (formData: AddContactRequest) => void;
 }
 
+/**
+ * State model for ContactForm
+ * All fields have their value held in state and the state updated onChange
+ * The state values are then used on submission for validation purposes
+ */
 interface ContactFormState {
   address1Value: string;
   address2Value: string;
@@ -33,6 +41,9 @@ interface ContactFormState {
 
 class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
 
+  /**
+   * Give default values of all items in state.
+   */
   constructor(props: ContactFormProps) {
     super(props);
     this.state = {
@@ -51,6 +62,10 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     };
   }
 
+  /**
+   * Set values on mount if contactDetails are passed in as a prop.
+   * Edit and Add pages can use same Form component by having this method in here.
+   */
   public componentDidMount() {
     if (this.props.contactDetails) {
       this.setState({
@@ -67,6 +82,10 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     }
   }
 
+  /**
+   * Address field render separate to main render
+   * This is because the address fields are hidden by default unttil an address is validated.
+   */
   public renderAddressFields() {
     return (
       <React.Fragment>
@@ -200,6 +219,10 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     );
   }
 
+  /**
+   * onChange functions for each input, see README.md - This could be refactored for optimisation
+   */
+
   @autobind
   private changeName(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ nameValue: event.target.value, 'nameFieldError': event.target.value.length === 0 })
@@ -246,6 +269,11 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     this.setState({ addressCountyValue: event.target.value })
   }
 
+  /**
+   * Validate postcode with request to postcodes.io
+   * SnackBar error if postcode invalid or null
+   * If postcode is valid, the postcode data is fetched immediately.
+   */
   @autobind
   private checkPostcodeValid() {
     const postcode = this.state.postcodeValue;
@@ -280,6 +308,10 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     }
   }
 
+  /**
+   * Fetch postcode data
+   * Certain address fields populated based on the response by updating their corresponding state values
+   */
   @autobind
   private fetchPostcodeData() {
     const postcode = this.state.postcodeValue;
@@ -304,6 +336,12 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
     this.setState({ displaySnackBar: false });
   }
 
+  /**
+   * Validate the form on click of submit
+   * If any field invalid the relevant field error state is updated
+   * Email format validation is not checked here as it is continually checked onChange
+   * Valid form will call relevant function passed in as callback from parent component.
+   */
   @autobind
   private validateFormData() {
     const invalidName = !this.state.nameValue;

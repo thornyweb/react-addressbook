@@ -1,3 +1,6 @@
+/**
+ * Use specific imports from the Material UI package to minimise end codebase size.
+ */
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,6 +23,9 @@ import { DeleteContact, GetContacts } from '../api';
 import { Contact } from '../types';
 import SharedSnackbar from './SharedSnackbar';
 
+/**
+ * Define model of state used by this component
+ */
 interface ContactsTableState {
   contacts: Contact[] | null;
   deleteDialogOpen: boolean;
@@ -42,11 +48,17 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
     };
   }
 
+  /**
+   * On component mount, fetch contacts
+   */
   public componentDidMount() {
     this.getContacts();
   }
 
   public render() {
+    /**
+     * Return placeholders until contacts are loaded
+     */
     if (this.state.fetchingAddresses) {
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><CircularProgress size={100} /><Typography><br />Loading...</Typography></div>;
     }
@@ -59,6 +71,9 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
       return <div style={{ textAlign: 'center', padding: '1em 0' }}><InfoIcon /><Typography><br />No contacts to display</Typography></div>;
     }
 
+    /**
+     * Render table which maps over array of contacts 
+     */
     return (
       <React.Fragment>
         <Table>
@@ -121,7 +136,7 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
 
   @autobind
   private getContacts() {
-    /*
+    /**
      * Make axios call to restdb.io database of contacts,
      * Update state boolean FetchingAddresses regardless of success of call, error is handled on component render
      * If successful, also update state with Contacts returned from the response.
@@ -132,6 +147,10 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
       .catch(err => this.setState({ fetchingAddresses: false }));
   }
 
+  /**
+   * Take all address fields of the current contact and
+   * concatenate to a single string only returning values which are populated
+   */
   private sanitizeAddress(contact: Contact) {
     let returnValue = '';
     const addressFields = ['address_line1', 'address_line2', 'address_town', 'address_county', 'address_postcode'];
@@ -143,6 +162,9 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
     return returnValue;
   }
 
+  /**
+   * Confirmation dialog to ensure that contact details aren't deleted by mistake.
+   */
   @autobind
   private openDeleteDialog(event: React.SyntheticEvent<HTMLAnchorElement>) {
     if (event.currentTarget.dataset.id) {
@@ -172,6 +194,10 @@ class ContactsTable extends React.Component<RouteComponentProps<void>, ContactsT
     this.setState({ showSnackbar: false, snackbarContent: '' });
   }
 
+  /**
+   * onClick event for edit link, navigation within the app using react router
+   * ID for redirect path extracted from data attribute of anchor.
+   */
   @autobind
   private editContact(event: React.SyntheticEvent<HTMLAnchorElement>) {
     if (event.currentTarget.dataset.id) {
