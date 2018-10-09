@@ -96,7 +96,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             fullWidth={true}
             name="address_line_1"
             value={this.state.address1Value}
-            onChange={this.changeAddress1}
+            onChange={this.changeField.bind(this, 'address1Value')}
           />
         </Grid>
         <Grid item={true}>
@@ -107,7 +107,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             name="address_line_2"
             InputLabelProps={{ shrink: true }}
             value={this.state.address2Value}
-            onChange={this.changeAddress2}
+            onChange={this.changeField.bind(this, 'address2Value')}
           />
         </Grid>
         <Grid item={true}>
@@ -118,7 +118,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             name="address_town"
             InputLabelProps={{ shrink: true }}
             value={this.state.addressTownValue}
-            onChange={this.changeAddressTown}
+            onChange={this.changeField.bind(this, 'addressTownValue')}
           />
         </Grid>
         <Grid item={true}>
@@ -128,7 +128,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
             name="address_county"
             InputLabelProps={{ shrink: true }}
             value={this.state.addressCountyValue}
-            onChange={this.changeAddressCounty}
+            onChange={this.changeField.bind(this, 'addressCountyValue')}
           />
         </Grid>
       </React.Fragment>
@@ -175,7 +175,7 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
                   type="tel"
                   fullWidth={true}
                   name="telephone"
-                  onChange={this.changeTel}
+                  onChange={this.changeField.bind(this, 'telephoneValue')}
                   value={this.state.telephoneValue}
                 />
               </Grid>
@@ -220,17 +220,17 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
   }
 
   /**
-   * onChange functions for each input, see README.md - This could be refactored for optimisation
+   * onChange functions, a generic catch all for standard behaviour inputs with custom functions for each field requiring validation.
    */
+
+  @autobind
+  private changeField(event: React.ChangeEvent<HTMLInputElement>, field: keyof ContactFormState) {
+    this.setState({...this.state, [field]: event.target.value });
+  }
 
   @autobind
   private changeName(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ nameValue: event.target.value, 'nameFieldError': event.target.value.length === 0 })
-  }
-
-  @autobind
-  private changeTel(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ telephoneValue: event.target.value })
   }
 
   @autobind
@@ -247,26 +247,6 @@ class ContactForm extends React.Component<ContactFormProps, ContactFormState> {
   @autobind
   private changePostcode(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ postcodeValue: event.target.value, postcodeValid: undefined })
-  }
-
-  @autobind
-  private changeAddress1(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ address1Value: event.target.value })
-  }
-
-  @autobind
-  private changeAddress2(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ address2Value: event.target.value })
-  }
-
-  @autobind
-  private changeAddressTown(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ addressTownValue: event.target.value })
-  }
-
-  @autobind
-  private changeAddressCounty(event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ addressCountyValue: event.target.value })
   }
 
   /**
